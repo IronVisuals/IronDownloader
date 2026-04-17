@@ -10,7 +10,7 @@ ctk.set_default_color_theme("blue")
 
 app = ctk.CTk()
 app.geometry("650x550")
-app.title("IronDownloader 4k") # NOME ATUALIZADO
+app.title("IronDownloader 4k - Pro Edition")
 app.resizable(False, False)
 
 pasta_downloads_padrao = os.path.join(os.path.expanduser('~'), 'Downloads')
@@ -47,7 +47,8 @@ def hook_progresso(d):
             app.after(0, atualizar_progresso_ui, percentual)
     elif d['status'] == 'finished':
         app.after(0, atualizar_progresso_ui, 1.0)
-        app.after(0, label_status.configure, text="Convertendo e finalizando arquivo...", text_color="yellow")
+        # CORREÇÃO APLICADA AQUI COM O LAMBDA
+        app.after(0, lambda: label_status.configure(text="Convertendo e finalizando arquivo...", text_color="yellow"))
 
 # 3. Lógica de Download
 def iniciar_download():
@@ -72,7 +73,7 @@ def iniciar_download():
                 'noplaylist': True,
                 'ffmpeg_location': r'C:\Users\Henrique\Documents\FFmpeg\ffmpeg-8.1-essentials_build\bin', 
                 'progress_hooks': [hook_progresso],
-                'keepvideo': False, # FORÇA A DELETAR O ARQUIVO ORIGINAL (.webm) APÓS CONVERTER
+                'keepvideo': False, 
             }
 
             if tipo == "Vídeo":
@@ -83,7 +84,6 @@ def iniciar_download():
                     'merge_output_format': 'mp4'
                 })
             else:
-                # LOGICA DE ÁUDIO BLINDADA
                 opcoes_yt.update({'format': 'bestaudio/best'})
                 codec = 'wav' if "WAV" in qualidade else 'mp3'
                 bitrate = '320' if "320" in qualidade else '192'
@@ -99,12 +99,17 @@ def iniciar_download():
             with yt_dlp.YoutubeDL(opcoes_yt) as ydl:
                 ydl.download([url])
             
-            app.after(0, label_status.configure, text="Download Concluído com Sucesso!", text_color="#00FF00")
+            # CORREÇÃO APLICADA AQUI COM O LAMBDA
+            app.after(0, lambda: label_status.configure(text="Download Concluído com Sucesso!", text_color="#00FF00"))
+        
         except Exception as e:
-            app.after(0, label_status.configure, text="Erro no download.", text_color="red")
+            # CORREÇÃO APLICADA AQUI COM O LAMBDA
+            app.after(0, lambda: label_status.configure(text="Erro no download.", text_color="red"))
             print(f"Erro detalhado: {e}") 
+        
         finally:
-            app.after(0, botao_baixar.configure, state="normal") 
+            # CORREÇÃO APLICADA AQUI COM O LAMBDA
+            app.after(0, lambda: botao_baixar.configure(state="normal")) 
 
     threading.Thread(target=processo_em_segundo_plano).start()
 
