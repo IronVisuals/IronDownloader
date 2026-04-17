@@ -1,0 +1,32 @@
+# ========================
+# Ambientes Virtuais Python
+# ========================
+venv/
+env/
+.venv/
+
+# ========================
+# Cache e Compilações do Python
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ========================
+# PyInstaller (Executáveis)
+# ========================
+build/
+dist/
+*.spec
+*.exe
+
+# ========================
+# Configurações de Editores (VS Code)
+# ========================
+.vscode/
+
+# ========================
+# Arquivos de Sistema Operacional
+# ========================
+.DS_Store
+Thumbs.db
