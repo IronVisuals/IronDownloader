@@ -10,7 +10,7 @@ ctk.set_default_color_theme("blue")
 
 app = ctk.CTk()
 app.geometry("650x550")
-app.title("IronDownloader 4k") # Nome Atualizado
+app.title("IronDownloader 4k") # NOME ATUALIZADO
 app.resizable(False, False)
 
 pasta_downloads_padrao = os.path.join(os.path.expanduser('~'), 'Downloads')
@@ -47,7 +47,7 @@ def hook_progresso(d):
             app.after(0, atualizar_progresso_ui, percentual)
     elif d['status'] == 'finished':
         app.after(0, atualizar_progresso_ui, 1.0)
-        app.after(0, label_status.configure, text="IronDownloader processando FFmpeg...", text_color="yellow")
+        app.after(0, label_status.configure, text="Convertendo e finalizando arquivo...", text_color="yellow")
 
 # 3. Lógica de Download
 def iniciar_download():
@@ -70,9 +70,9 @@ def iniciar_download():
             opcoes_yt = {
                 'outtmpl': os.path.join(pasta_destino, '%(title)s.%(ext)s'),
                 'noplaylist': True,
-                # Lembre-se de conferir se este caminho está correto no seu PC
                 'ffmpeg_location': r'C:\Users\Henrique\Documents\FFmpeg\ffmpeg-8.1-essentials_build\bin', 
                 'progress_hooks': [hook_progresso],
+                'keepvideo': False, # FORÇA A DELETAR O ARQUIVO ORIGINAL (.webm) APÓS CONVERTER
             }
 
             if tipo == "Vídeo":
@@ -83,25 +83,33 @@ def iniciar_download():
                     'merge_output_format': 'mp4'
                 })
             else:
+                # LOGICA DE ÁUDIO BLINDADA
                 opcoes_yt.update({'format': 'bestaudio/best'})
                 codec = 'wav' if "WAV" in qualidade else 'mp3'
                 bitrate = '320' if "320" in qualidade else '192'
-                opcoes_yt.update({'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': codec, 'preferredquality': bitrate}]})
+                
+                opcoes_yt.update({
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': codec,
+                        'preferredquality': bitrate,
+                    }]
+                })
 
             with yt_dlp.YoutubeDL(opcoes_yt) as ydl:
                 ydl.download([url])
             
-            app.after(0, label_status.configure, text="Download Concluído!", text_color="#00FF00")
+            app.after(0, label_status.configure, text="Download Concluído com Sucesso!", text_color="#00FF00")
         except Exception as e:
             app.after(0, label_status.configure, text="Erro no download.", text_color="red")
-            print(f"Erro: {e}") 
+            print(f"Erro detalhado: {e}") 
         finally:
             app.after(0, botao_baixar.configure, state="normal") 
 
     threading.Thread(target=processo_em_segundo_plano).start()
 
 # 4. Interface (UI)
-titulo = ctk.CTkLabel(app, text="IronDownloader", font=("Arial", 24, "bold"), text_color="#1f538d")
+titulo = ctk.CTkLabel(app, text="IronDownloader 4k", font=("Arial", 24, "bold"), text_color="#1f538d")
 titulo.pack(pady=(20, 10))
 
 entrada_url = ctk.CTkEntry(app, width=500, placeholder_text="Cole o link do YouTube aqui...")
@@ -128,7 +136,7 @@ entrada_pasta.insert(0, pasta_downloads_padrao)
 
 botao_procurar = ctk.CTkButton(frame_pasta, text="Pasta", width=60, command=selecionar_pasta)
 botao_procurar.grid(row=0, column=1, padx=(0, 5))
-botao_restaurar = ctk.CTkButton(frame_pasta, text="Reset", width=60, fg_color="#454545", command=restaurar_downloads)
+botao_restaurar = ctk.CTkButton(frame_pasta, text="Reset", width=60, fg_color="#454545", hover_color="#2b2b2b", command=restaurar_downloads)
 botao_restaurar.grid(row=0, column=2)
 
 botao_baixar = ctk.CTkButton(app, text="INICIAR DOWNLOAD", command=iniciar_download, font=("Arial", 16, "bold"), height=50, fg_color="#1f538d", hover_color="#14375e")
