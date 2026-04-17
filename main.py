@@ -11,6 +11,7 @@ ctk.set_default_color_theme("blue")
 app = ctk.CTk()
 app.geometry("650x550")
 app.title("IronDownloader 4k - Pro Edition")
+app.iconbitmap("youtube.ico")
 app.resizable(False, False)
 
 pasta_downloads_padrao = os.path.join(os.path.expanduser('~'), 'Downloads')
